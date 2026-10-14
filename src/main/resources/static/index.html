@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apex Financial — Enterprise Digital Banking Portal</title>
+    <meta name="description" content="Apex Financial Services — High-security enterprise banking, real-time transfers, and digital liquidity management.">
+    
+    <!-- Google Fonts: Inter & Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons (Vanilla SVG script) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <header class="navbar" id="main-navbar">
+        <div class="navbar-container">
+            <div class="brand">
+                <div class="brand-logo">
+                    <i data-lucide="shield-check" class="brand-icon"></i>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-name">APEX</span>
+                    <span class="brand-sub">FINANCIAL SERVICES</span>
+                </div>
+            </div>
+
+            <!-- Authenticated Navigation Tabs -->
+            <nav class="nav-links" id="nav-links" style="display: none;">
+                <button class="nav-link active" id="nav-dashboard-btn" onclick="app.showCustomerDashboard()">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span>Dashboard</span>
+                </button>
+                <button class="nav-link" id="nav-ledger-btn" onclick="app.scrollToLedger()">
+                    <i data-lucide="receipt"></i>
+                    <span>Transactions</span>
+                </button>
+                <button class="nav-link" id="nav-admin-btn" style="display: none;" onclick="app.showAdminConsole()">
+                    <i data-lucide="shield-alert"></i>
+                    <span>Admin Operations</span>
+                </button>
+                <a href="/swagger-ui.html" target="_blank" class="nav-link api-docs-link">
+                    <i data-lucide="book-open"></i>
+                    <span>Swagger API</span>
+                </a>
+            </nav>
+
+            <!-- User Status / Auth Controls -->
+            <div class="nav-actions">
+                <div class="user-pill" id="user-pill" style="display: none;">
+                    <div class="user-avatar" id="user-avatar">JD</div>
+                    <div class="user-info">
+                        <span class="user-name" id="user-display-name">Johnathan Doe</span>
+                        <span class="user-role-badge" id="user-role-badge">CUSTOMER</span>
+                    </div>
+                    <button class="logout-btn" onclick="app.logout()" title="Sign Out">
+                        <i data-lucide="log-out"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dynamic Content Container -->
+    <main class="main-content" id="main-content">
+        
+        <!-- ========================================== -->
+        <!-- VIEW 1: AUTHENTICATION (LOGIN / REGISTER)  -->
+        <!-- ========================================== -->
+        <section id="auth-view" class="view-section">
+            <div class="auth-wrapper">
+                <div class="auth-hero">
+                    <div class="hero-badge">
+                        <i data-lucide="lock"></i> Enterprise Tier Security
+                    </div>
+                    <h1 class="hero-title">Apex Digital Banking & Treasury Portal</h1>
+                    <p class="hero-desc">
+                        ACID-compliant fund transfers, multi-account ledgering, and real-time capital liquidity orchestration powered by Spring Boot 3 & JWT Bearer token authentication.
+                    </p>
+
+                    <div class="demo-card">
+                        <div class="demo-card-header">
+                            <i data-lucide="zap"></i>
+                            <span>Instant 1-Click Evaluation Accounts</span>
+                        </div>
+                        <p class="demo-hint">Select a pre-seeded enterprise role to immediately explore the portal:</p>
+                        <div class="demo-buttons-grid">
+                            <button class="demo-btn customer-demo" onclick="app.quickLogin('john_doe', 'Password@123')">
+                                <div class="demo-btn-title">
+                                    <i data-lucide="user"></i> Customer Demo
+                                </div>
+                                <span class="demo-sub">User: john_doe | 2 Accounts ($48.2k)</span>
+                            </button>
+                            <button class="demo-btn admin-demo" onclick="app.quickLogin('admin', 'Admin@123')">
+                                <div class="demo-btn-title">
+                                    <i data-lucide="shield-check"></i> System Admin Demo
+                                </div>
+                                <span class="demo-sub">User: admin | Liquidity & Freeze Ctrl</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Auth Card (Tabs: Sign In / Register) -->
+                <div class="auth-card">
+                    <div class="auth-tabs">
+                        <button class="auth-tab active" id="tab-login-btn" onclick="app.switchAuthTab('login')">
+                            Sign In
+                        </button>
+                        <button class="auth-tab" id="tab-register-btn" onclick="app.switchAuthTab('register')">
+                            Open Account
+                        </button>
+                    </div>
+
+                    <!-- Sign In Form -->
+                    <form id="login-form" class="auth-form" onsubmit="app.handleLogin(event)">
+                        <div class="form-group">
+                            <label for="login-username">Username</label>
+                            <div class="input-wrapper">
+                                <i data-lucide="user" class="input-icon"></i>
+                                <input type="text" id="login-username" required placeholder="e.g. john_doe" autocomplete="username">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="login-password">Password</label>
+                            <div class="input-wrapper">
+                                <i data-lucide="key" class="input-icon"></i>
+                                <input type="password" id="login-password" required placeholder="••••••••" autocomplete="current-password">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="submit-btn" id="login-submit-btn">
+                            <span>Authenticate Securely</span>
+                            <i data-lucide="arrow-right"></i>
+                        </button>
+                    </form>
+
+                    <!-- Registration Form -->
+                    <form id="register-form" class="auth-form" style="display: none;" onsubmit="app.handleRegister(event)">
+                        <div class="form-group">
+                            <label for="reg-username">Username</label>
+                            <div class="input-wrapper">
+                                <i data-lucide="user-plus" class="input-icon"></i>
+                                <input type="text" id="reg-username" required placeholder="e.g. alex_stone" minlength="3" maxlength="50">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="reg-fullname">Full Legal Name</label>
+                            <div class="input-wrapper">
+                                <i data-lucide="badge-check" class="input-icon"></i>
+                                <input type="text" id="reg-fullname" required placeholder="Alex M. Stone" maxlength="100">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="reg-email">Corporate Email</label>
+                            <div class="input-wrapper">
+                                <i data-lucide="mail" class="input-icon"></i>
+                                <input type="email" id="reg-email" required placeholder="alex@company.com" maxlength="100">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="reg-phone">Phone Number</label>
+                            <div class="input-wrapper">
+                                <i data-lucide="phone" class="input-icon"></i>
+                                <input type="tel" id="reg-phone" placeholder="+1 (555) 012-3456" maxlength="20">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="reg-password">Password</label>
+                            <div class="input-wrapper">
+                                <i data-lucide="lock" class="input-icon"></i>
+                                <input type="password" id="reg-password" required placeholder="At least 6 characters" minlength="6" maxlength="100">
+                            </div>
+                        </div>
+
+                        <div class="registration-perk-box">
+                            <i data-lucide="sparkles"></i>
+                            <span>Includes instant <strong>$1,000.00 Welcome Bonus</strong> deposited to your checking account!</span>
+                        </div>
+
+                        <button type="submit" class="submit-btn emerald-btn" id="register-submit-btn">
+                            <span>Create Account & Claim Credit</span>
+                            <i data-lucide="check-circle"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ========================================== -->
+        <!-- VIEW 2: CUSTOMER DASHBOARD                 -->
+        <!-- ========================================== -->
+        <section id="customer-view" class="view-section" style="display: none;">
+            <!-- Greeting & Quick Summary Banner -->
+            <div class="dashboard-header">
+                <div>
+                    <h2 class="welcome-title">Welcome back, <span id="dash-customer-name">Valued Customer</span></h2>
+                    <p class="welcome-sub">Apex Private Client & Treasury Portal | Live Liquidity Overview</p>
+                </div>
+                <div class="quick-actions-bar">
+                    <button class="action-btn primary" onclick="app.openTransferModal()">
+                        <i data-lucide="send"></i> Transfer Funds
+                    </button>
+                    <button class="action-btn secondary" onclick="app.openDepositModal()">
+                        <i data-lucide="arrow-down-left"></i> Deposit
+                    </button>
+                    <button class="action-btn secondary" onclick="app.openWithdrawModal()">
+                        <i data-lucide="arrow-up-right"></i> Withdraw
+                    </button>
+                    <button class="action-btn outline" onclick="app.openNewAccountModal()">
+                        <i data-lucide="plus-circle"></i> New Account
+                    </button>
+                </div>
+            </div>
+
+            <!-- Net Worth Card & Account Carousel Grid -->
+            <div class="financial-overview-grid">
+                <!-- Aggregate Balance Card -->
+                <div class="net-worth-card">
+                    <div class="card-glass-glow"></div>
+                    <div class="net-worth-header">
+                        <span class="label">TOTAL AVAILABLE LIQUIDITY</span>
+                        <span class="currency-tag">USD</span>
+                    </div>
+                    <div class="net-worth-amount" id="dash-total-balance">$0.00</div>
+                    <div class="net-worth-footer">
+                        <div class="stat-item">
+                            <span class="stat-num" id="dash-accounts-count">0</span>
+                            <span class="stat-desc">Active Accounts</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-num" id="dash-monthly-txns">--</span>
+                            <span class="stat-desc">Recorded Transactions</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Account Cards Container -->
+                <div class="accounts-slider-container">
+                    <div class="slider-header">
+                        <h3>Your Portfolio Accounts</h3>
+                        <span class="slider-hint">Select an account below to filter ledger activity</span>
+                    </div>
+                    <div class="accounts-grid" id="accounts-grid">
+                        <!-- Injected via JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transaction Ledger Section -->
+            <div class="ledger-section" id="ledger-section">
+                <div class="ledger-header">
+                    <div class="ledger-title-group">
+                        <h3>Transaction Audit Ledger</h3>
+                        <p id="ledger-filter-status" class="ledger-status-subtitle">Showing all recent account activities</p>
+                    </div>
+
+                    <!-- Ledger Filter Controls -->
+                    <div class="ledger-controls">
+                        <div class="search-box">
+                            <i data-lucide="search"></i>
+                            <input type="text" id="ledger-search-input" placeholder="Search reference, description, account..." oninput="app.filterTransactions()">
+                        </div>
+                        <div class="filter-pills">
+                            <button class="filter-pill active" data-type="ALL" onclick="app.setLedgerTypeFilter('ALL')">All</button>
+                            <button class="filter-pill" data-type="DEPOSIT" onclick="app.setLedgerTypeFilter('DEPOSIT')">Deposits</button>
+                            <button class="filter-pill" data-type="WITHDRAWAL" onclick="app.setLedgerTypeFilter('WITHDRAWAL')">Withdrawals</button>
+                            <button class="filter-pill" data-type="TRANSFER" onclick="app.setLedgerTypeFilter('TRANSFER')">Transfers</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transactions Table -->
+                <div class="table-responsive">
+                    <table class="data-table" id="transactions-table">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Reference</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                                <th>Source / Target</th>
+                                <th>Amount</th>
+                                <th>Post-Balance</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactions-tbody">
+                            <!-- Injected dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Empty State -->
+                <div id="transactions-empty-state" class="empty-state" style="display: none;">
+                    <i data-lucide="inbox"></i>
+                    <h4>No Transactions Found</h4>
+                    <p>There are no transactions matching your current filter criteria.</p>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ========================================== -->
+        <!-- VIEW 3: ADMIN CONSOLE (ROLE_ADMIN)         -->
+        <!-- ========================================== -->
+        <section id="admin-view" class="view-section" style="display: none;">
+            <div class="dashboard-header">
+                <div>
+                    <div class="admin-badge">
+                        <i data-lucide="shield-check"></i> Enterprise System Governance
+                    </div>
+                    <h2 class="welcome-title">Apex Liquidity & Compliance Console</h2>
+                    <p class="welcome-sub">Global institutional monitoring, liquidity reserves, and account freeze controls.</p>
+                </div>
+                <div>
+                    <button class="action-btn secondary" onclick="app.refreshAdminData()">
+                        <i data-lucide="refresh-cw"></i> Refresh Metrics
+                    </button>
+                </div>
+            </div>
+
+            <!-- Admin High-Level KPIs -->
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-icon emerald">
+                        <i data-lucide="vault"></i>
+                    </div>
+                    <div class="kpi-details">
+                        <span class="kpi-label">TOTAL BANK RESERVES</span>
+                        <div class="kpi-value" id="kpi-liquidity">$0.00</div>
+                        <span class="kpi-meta">Active Capital across all accounts</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-icon blue">
+                        <i data-lucide="repeat"></i>
+                    </div>
+                    <div class="kpi-details">
+                        <span class="kpi-label">TRANSACTION VOLUME</span>
+                        <div class="kpi-value" id="kpi-volume">$0.00</div>
+                        <span class="kpi-meta">Lifetime cleared volume</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-icon purple">
+                        <i data-lucide="credit-card"></i>
+                    </div>
+                    <div class="kpi-details">
+                        <span class="kpi-label">TOTAL BANK ACCOUNTS</span>
+                        <div class="kpi-value" id="kpi-total-accounts">0</div>
+                        <span class="kpi-meta">
+                            <span id="kpi-active-accounts" class="text-emerald">0 Active</span> &bull; 
+                            <span id="kpi-frozen-accounts" class="text-rose">0 Frozen</span>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-icon amber">
+                        <i data-lucide="users"></i>
+                    </div>
+                    <div class="kpi-details">
+                        <span class="kpi-label">ONBOARDED CLIENTS</span>
+                        <div class="kpi-value" id="kpi-users">0</div>
+                        <span class="kpi-meta">Registered portal users</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Tabbed Control Tables -->
+            <div class="admin-sections-grid">
+                <!-- User Accounts Table with Freeze/Unfreeze -->
+                <div class="admin-panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <i data-lucide="users"></i>
+                            <h3>Client Accounts Management</h3>
+                        </div>
+                        <span class="badge-count" id="admin-accounts-count">0 Accounts</span>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Account No.</th>
+                                    <th>Holder</th>
+                                    <th>Type</th>
+                                    <th>Balance</th>
+                                    <th>Status</th>
+                                    <th>Governance Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-accounts-tbody">
+                                <!-- Injected dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Global Transaction Audit Stream -->
+                <div class="admin-panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <i data-lucide="activity"></i>
+                            <h3>System-Wide Audit Stream</h3>
+                        </div>
+                        <span class="badge-count" id="admin-txns-count">Recent Ledger</span>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Ref</th>
+                                    <th>Type</th>
+                                    <th>Amount</th>
+                                    <th>Source &rarr; Target</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-transactions-tbody">
+                                <!-- Injected dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ========================================== -->
+    <!-- MODAL: FUNDS TRANSFER                      -->
+    <!-- ========================================== -->
+    <div class="modal-overlay" id="transfer-modal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-title-group">
+                    <div class="modal-icon blue">
+                        <i data-lucide="send"></i>
+                    </div>
+                    <div>
+                        <h3>Transfer Funds</h3>
+                        <p>Atomic peer-to-peer or inter-account transfer</p>
+                    </div>
+                </div>
+                <button class="modal-close-btn" onclick="app.closeModal('transfer-modal')">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+
+            <form onsubmit="app.handleTransferSubmit(event)">
+                <div class="form-group">
+                    <label for="transfer-source-acc">From Account (Source)</label>
+                    <select id="transfer-source-acc" class="custom-select" required onchange="app.updateTransferSourceMax()">
+                        <!-- Injected dynamically -->
+                    </select>
+                    <span class="input-helper" id="transfer-available-balance">Available: $0.00</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="transfer-target-acc">To Account (Recipient Number)</label>
+                    <div class="input-wrapper">
+                        <i data-lucide="hash" class="input-icon"></i>
+                        <input type="text" id="transfer-target-acc" required placeholder="e.g. APEX-30078923" onblur="app.lookupRecipientName()">
+                    </div>
+                    <!-- Live Recipient Lookup Card -->
+                    <div id="recipient-lookup-result" class="recipient-badge" style="display: none;">
+                        <i data-lucide="check-circle" class="lookup-success-icon"></i>
+                        <div class="lookup-details">
+                            <span class="recipient-name" id="lookup-recipient-name">Jane Smith</span>
+                            <span class="recipient-meta" id="lookup-recipient-meta">CHECKING &bull; ACTIVE</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="transfer-amount">Amount (USD)</label>
+                    <div class="input-wrapper">
+                        <span class="input-prefix">$</span>
+                        <input type="number" id="transfer-amount" required step="0.01" min="1.00" placeholder="0.00">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="transfer-desc">Transfer Memo / Description</label>
+                    <div class="input-wrapper">
+                        <i data-lucide="file-text" class="input-icon"></i>
+                        <input type="text" id="transfer-desc" placeholder="e.g. Invoice #1042 payment" maxlength="150">
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="app.closeModal('transfer-modal')">Cancel</button>
+                    <button type="submit" class="submit-btn primary-btn" id="transfer-submit-btn">
+                        <span>Execute Transfer</span>
+                        <i data-lucide="arrow-right"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- MODAL: FUNDS DEPOSIT                       -->
+    <!-- ========================================== -->
+    <div class="modal-overlay" id="deposit-modal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-title-group">
+                    <div class="modal-icon emerald">
+                        <i data-lucide="arrow-down-left"></i>
+                    </div>
+                    <div>
+                        <h3>Deposit Capital</h3>
+                        <p>Credit funds to your portfolio account</p>
+                    </div>
+                </div>
+                <button class="modal-close-btn" onclick="app.closeModal('deposit-modal')">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+
+            <form onsubmit="app.handleDepositSubmit(event)">
+                <div class="form-group">
+                    <label for="deposit-acc">Target Account</label>
+                    <select id="deposit-acc" class="custom-select" required>
+                        <!-- Injected dynamically -->
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="deposit-amount">Amount (USD)</label>
+                    <div class="input-wrapper">
+                        <span class="input-prefix">$</span>
+                        <input type="number" id="deposit-amount" required step="0.01" min="1.00" placeholder="0.00">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="deposit-desc">Deposit Reference / Memo</label>
+                    <div class="input-wrapper">
+                        <i data-lucide="file-text" class="input-icon"></i>
+                        <input type="text" id="deposit-desc" placeholder="e.g. Liquidity injection" maxlength="150">
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="app.closeModal('deposit-modal')">Cancel</button>
+                    <button type="submit" class="submit-btn emerald-btn" id="deposit-submit-btn">
+                        <span>Confirm Deposit</span>
+                        <i data-lucide="check"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- MODAL: FUNDS WITHDRAWAL                    -->
+    <!-- ========================================== -->
+    <div class="modal-overlay" id="withdraw-modal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-title-group">
+                    <div class="modal-icon rose">
+                        <i data-lucide="arrow-up-right"></i>
+                    </div>
+                    <div>
+                        <h3>Withdraw Funds</h3>
+                        <p>Debit funds from your account with balance checks</p>
+                    </div>
+                </div>
+                <button class="modal-close-btn" onclick="app.closeModal('withdraw-modal')">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+
+            <form onsubmit="app.handleWithdrawSubmit(event)">
+                <div class="form-group">
+                    <label for="withdraw-acc">Source Account</label>
+                    <select id="withdraw-acc" class="custom-select" required>
+                        <!-- Injected dynamically -->
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="withdraw-amount">Amount (USD)</label>
+                    <div class="input-wrapper">
+                        <span class="input-prefix">$</span>
+                        <input type="number" id="withdraw-amount" required step="0.01" min="1.00" placeholder="0.00">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="withdraw-desc">Withdrawal Memo</label>
+                    <div class="input-wrapper">
+                        <i data-lucide="file-text" class="input-icon"></i>
+                        <input type="text" id="withdraw-desc" placeholder="e.g. Branch ATM Cash Withdrawal" maxlength="150">
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="app.closeModal('withdraw-modal')">Cancel</button>
+                    <button type="submit" class="submit-btn rose-btn" id="withdraw-submit-btn">
+                        <span>Confirm Withdrawal</span>
+                        <i data-lucide="check"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- MODAL: OPEN NEW ACCOUNT                    -->
+    <!-- ========================================== -->
+    <div class="modal-overlay" id="new-account-modal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-title-group">
+                    <div class="modal-icon purple">
+                        <i data-lucide="credit-card"></i>
+                    </div>
+                    <div>
+                        <h3>Open Additional Account</h3>
+                        <p>Expand your financial portfolio with Apex</p>
+                    </div>
+                </div>
+                <button class="modal-close-btn" onclick="app.closeModal('new-account-modal')">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+
+            <form onsubmit="app.handleNewAccountSubmit(event)">
+                <div class="form-group">
+                    <label for="new-acc-type">Account Type</label>
+                    <select id="new-acc-type" class="custom-select" required>
+                        <option value="SAVINGS">High-Yield Savings (4.75% APY)</option>
+                        <option value="BUSINESS">Commercial Business Treasury</option>
+                        <option value="CHECKING">Secondary Checking Account</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="new-acc-deposit">Initial Opening Deposit (USD)</label>
+                    <div class="input-wrapper">
+                        <span class="input-prefix">$</span>
+                        <input type="number" id="new-acc-deposit" step="0.01" min="0.00" value="500.00">
+                    </div>
+                    <span class="input-helper">Optional initial capital allocation</span>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="app.closeModal('new-account-modal')">Cancel</button>
+                    <button type="submit" class="submit-btn primary-btn" id="new-acc-submit-btn">
+                        <span>Provision Account</span>
+                        <i data-lucide="check"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification Toasts Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Application Logic -->
+    <script src="/js/app.js"></script>
+    <script>
+        // Initialize Lucide icons on load
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+        });
+    </script>
+</body>
+</html>
